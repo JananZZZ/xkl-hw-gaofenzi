@@ -28,7 +28,7 @@ jobs:
           files=(
             head
             part-01 part-02 part-03 part-04 part-05 part-06 part-07 part-08
-            part-09a part-09b
+            part-09-0 part-09-1 part-09-2 part-09-3
             part-10 part-11 part-12 part-13
           )
 
@@ -37,6 +37,7 @@ jobs:
           done
 
           cat "${files[@]/#/.image-payload-v2/}" > /tmp/readme-images.b64
+          echo "base64 bytes: $(wc -c < /tmp/readme-images.b64)"
           test "$(wc -c < /tmp/readme-images.b64)" -eq 163688
           base64 --decode /tmp/readme-images.b64 > /tmp/readme-images.zip
 
