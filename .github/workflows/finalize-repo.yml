@@ -25,22 +25,20 @@ jobs:
         run: |
           set -euo pipefail
 
-          cat \
-            .image-payload-v2/head \
-            .image-payload-v2/part-01 \
-            .image-payload-v2/part-02 \
-            .image-payload-v2/part-03 \
-            .image-payload-v2/part-04 \
-            .image-payload-v2/part-05 \
-            .image-payload-v2/part-06 \
-            .image-payload-v2/part-07 \
-            .image-payload-v2/part-08 \
-            .image-payload-v2/part-09 \
-            .image-payload-v2/part-10 \
-            .image-payload-v2/part-11 \
-            .image-payload-v2/part-12 \
-            .image-payload-v2/part-13 \
-            | base64 --decode > /tmp/readme-images.zip
+          files=(
+            head
+            part-01 part-02 part-03 part-04 part-05 part-06 part-07 part-08
+            part-09a part-09b
+            part-10 part-11 part-12 part-13
+          )
+
+          for f in "${files[@]}"; do
+            printf '%-10s %s\n' "$f" "$(wc -c < ".image-payload-v2/$f")"
+          done
+
+          cat "${files[@]/#/.image-payload-v2/}" > /tmp/readme-images.b64
+          test "$(wc -c < /tmp/readme-images.b64)" -eq 163688
+          base64 --decode /tmp/readme-images.b64 > /tmp/readme-images.zip
 
           echo "967e2bc748743255f814cba2b1f893f5a4be4f6887a3d82358eaf8a2d37f0c86  /tmp/readme-images.zip" | sha256sum -c -
           unzip -t /tmp/readme-images.zip
