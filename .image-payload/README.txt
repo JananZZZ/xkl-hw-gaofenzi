@@ -1,0 +1,1 @@
+Temporary image payload for README format repair. This branch is used only to reconstruct standard JPG assets via GitHub Actions.
