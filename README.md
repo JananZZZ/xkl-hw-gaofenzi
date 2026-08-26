@@ -1,7 +1,7 @@
 # xkl & hw 高分子 / 材料刷题小程序
 
 <p align="center">
-  <img src="assets/cover.webp" width="520" alt="xkl&hw 高分子刷题小程序封面">
+  <img src="assets/cover.jpg" width="520" alt="xkl&hw 高分子刷题小程序封面">
 </p>
 
 <p align="center">
@@ -56,19 +56,19 @@
 ### 学习总览
 
 <p align="center">
-  <img src="assets/overview.webp" width="900" alt="学习总览">
+  <img src="assets/overview.jpg" width="900" alt="学习总览">
 </p>
 
 ### 真题与回忆题
 
 <p align="center">
-  <img src="assets/truth.webp" width="900" alt="真题与回忆题">
+  <img src="assets/truth.jpg" width="900" alt="真题与回忆题">
 </p>
 
 ### AI 助教
 
 <p align="center">
-  <img src="assets/ai-assistant.webp" width="900" alt="AI助教">
+  <img src="assets/ai-assistant.jpg" width="900" alt="AI助教">
 </p>
 
 ## 🚀 使用方法
