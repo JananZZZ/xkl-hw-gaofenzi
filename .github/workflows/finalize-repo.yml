@@ -1,0 +1,102 @@
+name: Finalize README images and repository branches
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/finalize-repo.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Restore and verify standard JPG assets
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          cat \
+            .image-payload-v2/head \
+            .image-payload-v2/part-01 \
+            .image-payload-v2/part-02 \
+            .image-payload-v2/part-03 \
+            .image-payload-v2/part-04 \
+            .image-payload-v2/part-05 \
+            .image-payload-v2/part-06 \
+            .image-payload-v2/part-07 \
+            .image-payload-v2/part-08 \
+            .image-payload-v2/part-09 \
+            .image-payload-v2/part-10 \
+            .image-payload-v2/part-11 \
+            .image-payload-v2/part-12 \
+            .image-payload-v2/part-13 \
+            | base64 --decode > /tmp/readme-images.zip
+
+          echo "967e2bc748743255f814cba2b1f893f5a4be4f6887a3d82358eaf8a2d37f0c86  /tmp/readme-images.zip" | sha256sum -c -
+          unzip -t /tmp/readme-images.zip
+          mkdir -p assets
+          unzip -o /tmp/readme-images.zip -d assets
+
+          test "$(stat -c%s assets/ai-assistant.jpg)" -eq 21470
+          test "$(stat -c%s assets/cover.jpg)" -eq 65803
+          test "$(stat -c%s assets/overview.jpg)" -eq 17151
+          test "$(stat -c%s assets/truth.jpg)" -eq 23877
+
+          for f in assets/ai-assistant.jpg assets/cover.jpg assets/overview.jpg assets/truth.jpg; do
+            test "$(head -c 2 "$f" | od -An -tx1 | tr -d ' \n')" = "ffd8"
+            test "$(tail -c 2 "$f" | od -An -tx1 | tr -d ' \n')" = "ffd9"
+          done
+
+      - name: Update README and clean temporary files
+        shell: bash
+        run: |
+          set -euo pipefail
+          sed -i \
+            -e 's#assets/cover\.webp#assets/cover.jpg#g' \
+            -e 's#assets/overview\.webp#assets/overview.jpg#g' \
+            -e 's#assets/truth\.webp#assets/truth.jpg#g' \
+            -e 's#assets/ai-assistant\.webp#assets/ai-assistant.jpg#g' \
+            README.md
+
+          if grep -q '\.webp' README.md; then
+            echo "README still contains webp references" >&2
+            exit 1
+          fi
+
+          git rm -f --ignore-unmatch assets/cover.webp assets/overview.webp assets/truth.webp assets/ai-assistant.webp
+          git rm -r -f --ignore-unmatch .image-payload .image-payload-v2
+          git add README.md assets/cover.jpg assets/overview.jpg assets/truth.jpg assets/ai-assistant.jpg
+          git rm -f --ignore-unmatch .github/workflows/finalize-repo.yml
+
+      - name: Commit final main state
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "fix: restore README images as standard JPG and clean repository"
+          git push origin HEAD:main
+
+      - name: Delete temporary branches
+        shell: bash
+        run: |
+          set -euo pipefail
+          for branch in \
+            image-cleanup-final \
+            image-fix-working \
+            release-payload-v260826.26 \
+            tmp-test \
+            tmp-upload \
+            tmp-upload2; do
+            git push origin --delete "$branch" || true
+          done
