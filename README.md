@@ -1,4 +1,4 @@
-# xkl & hw 高分子 / 材料刷题小程序
+# xkl & hw 先进材料/结构 刷题小程序
 
 <p align="center">
   <img src="assets/cover.png" width="520" alt="xkl&hw 高分子刷题小程序封面">
